@@ -9,7 +9,8 @@ wallet = Wallet()
 payment = Payment(app, wallet)
 
 @app.route('/geocode', methods=['POST'])
-@payment.required(1)
+# @payment.required(1) #For testing
+@payment.required(1000)
 def geocode():
     params = {
         'address': request.form.get('address'),
