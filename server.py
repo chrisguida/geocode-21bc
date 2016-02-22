@@ -1,7 +1,8 @@
-import requests, urllib, json
+import requests, urllib, json, yaml
 from flask import Flask, request
 from two1.lib.wallet import Wallet
 from two1.lib.bitserv.flask import Payment
+from flask import send_from_directory
 
 app = Flask(__name__)
 API_KEY = json.load(open('geocode-api.json')).get('key')
@@ -12,6 +13,9 @@ payment = Payment(app, wallet)
 # @payment.required(1) #For testing
 @payment.required(1000)
 def geocode():
+    '''
+    Geocodes an address
+    '''
     params = {
         'address': request.form.get('address'),
         'key': API_KEY
@@ -21,4 +25,20 @@ def geocode():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
+
+@app.route('/manifest')
+def docs():
+    '''
+    Provides the app manifest to the 21 crawler.
+    '''
+    with open('manifest.yaml', 'r') as f:
+        manifest_yaml = yaml.load(f)
+    return json.dumps(manifest_yaml)
+
+@app.route('/client')
+def client():
+    '''
+    Provides an example client script.
+    '''
+    return send_from_directory('static', 'client.py')
 

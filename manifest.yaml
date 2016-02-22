@@ -1,0 +1,159 @@
+# You can edit this file at editor.swagger.io.
+swagger: '2.0'
+info:
+   x-21-github-profile-url: https://github.com/chrisguida
+   x-21-github-project-url: https://github.com/chrisguida/geocode-21bc
+   title: Geocode
+   description: Converts an address into latitude/longitude
+   termsOfService: https://opensource.org/licenses/MIT
+   x-21-usage: 'Useful for drawing a map from a list of addresses. Send a POST request with a JSON object with format {"address": <address search query>}. The app returns detailed info about the address, including latitude and longitude. You will get a list of results if your search is ambiguous. The sample in client.py spits out a filtered, formatted version.'
+   x-21-quick-buy: "wget -O client.py http://10.244.183.81:5000/client \npython3 client.py http://10.244.183.81:5000"
+   x-21-category: utility
+   x-21-total-price:
+     min: 1000
+     max: 1000
+   contact:
+     name: 'Chris Guida'
+     email: chrisguida@gmail.com
+     url: https://21.co
+   license:
+     name: MIT LICENSE
+     url: https://opensource.org/licenses/MIT
+   x-21-keywords:
+     - geocode
+     - map
+     - latitude
+     - longitude
+     - address
+   version: '0.1'
+host: 10.244.183.81:5000
+schemes:
+ - http
+basePath: /
+x-21-manifest-path: /manifest
+x-21-healthcheck-path: /healthcheck
+paths:
+  /geocode:
+    post:
+     summary: Get detailed location info such as latitude and longitude given an address search query
+     consumes:
+       - application/json
+     produces:
+       - application/json
+     parameters:
+       - name: body
+         description: address string to search for
+         in: body
+         required: true
+         schema:
+           type: object
+           properties:
+             address:
+               type: string
+     responses:
+       200:
+         description: list of geocoding results
+         schema:
+           type: object
+           properties:
+             results:
+               $ref: "#/definitions/Address"
+             status:
+              type: string
+              enum:
+              - OK
+              - ZERO_RESULTS
+              - OVER_QUERY_LIMIT
+              - REQUEST_DENIED
+              - INVALID_REQUEST
+              - UNKNOWN_ERROR
+       400:
+         description: invalid input
+         schema:
+           type: object
+           properties:
+              error_message:
+               type: string
+       500:
+         description: error processing request
+         schema:
+           type: object
+           properties:
+             error_message:
+               type: string
+  /client:
+    get:
+      summary: Returns example client script.
+      responses:
+        200:
+         description: client file
+         schema:
+           type: string
+definitions:
+  Address:
+    type: object
+    properties:
+      address_components:
+        type: array
+        items:
+          $ref: "#/definitions/AddressComponent"
+      formatted_address:
+        type: string
+        example: 277 Bedford Ave, Brooklyn, NY 11211, USA
+      geometry:
+        $ref: "#/definitions/Geometry"
+      partial_match:
+        type: boolean
+      place_id:
+        type: string
+        example: ChIJd8BlQ2BZwokRAFUEcm_qrcA
+      types:
+        type: array
+        items:
+          type: string
+  AddressComponent:
+    type: object
+    properties:
+      types:
+        type: array
+        items:
+          type: string
+      long_name:
+        type: string
+        example: California
+      short_name:
+        type: string
+        example: CA
+  Geometry:
+    type: object
+    properties:
+      location:
+        $ref: "#/definitions/Location"
+      location_type:
+        type: string
+        enum:
+        - ROOFTOP
+        - RANGE_INTERPOLATED
+        - GEOMETRIC_CENTER
+        - APPROXIMATE
+      viewport:
+        $ref: "#/definitions/Viewport"
+      bounds:
+        $ref: "#/definitions/Viewport"
+  Location:
+    type: object
+    properties:
+      lat:
+        type: number
+        format: float
+      lng:
+        type: number
+        format: float
+  Viewport:
+    type: object
+    properties:
+      northeast:
+        $ref: "#/definitions/Location"
+      northeast:
+        $ref: "#/definitions/Location"
+
