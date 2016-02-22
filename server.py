@@ -4,7 +4,7 @@ from two1.lib.wallet import Wallet
 from two1.lib.bitserv.flask import Payment
 from flask import send_from_directory
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 API_KEY = json.load(open('geocode-api.json')).get('key')
 wallet = Wallet()
 payment = Payment(app, wallet)
@@ -40,5 +40,7 @@ def client():
     '''
     Provides an example client script.
     '''
-    return send_from_directory('static', 'client.py')
+    import os
+    print(os.getcwd())
+    return send_from_directory('/home/twenty/geocode-21bc/static', 'client.py')
 
